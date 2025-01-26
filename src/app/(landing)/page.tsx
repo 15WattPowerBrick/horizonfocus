@@ -2,7 +2,6 @@
 import Navbar from "./_components/Navbar";
 
 import { Button } from "@/components/ui/button";
-import { Link } from "lucide-react";
 
 export default function HomePage() {
   return (

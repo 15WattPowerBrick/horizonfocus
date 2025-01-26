@@ -16,7 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         username: { label: "Username" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize() {
         throw new InvalidLoginError()
       },
     }),
