@@ -3,14 +3,12 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { SignInButton } from "@/components/auth/signin-button";
 
 const navigation = [
-  { name: "Product", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "Marketplace", href: "#" },
-  { name: "Company", href: "#" },
+  { name: "Product", href: "/" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Contact Us", href: "/contact-us" },
 ];
 
 export default function Navbar() {
@@ -28,12 +26,8 @@ export default function Navbar() {
               <span className="">horizonfocus crm</span>
             </a>
           </div>
-          <div className="flex lg:hidden">
-
-              <Link href="/dashboard">
-                <Button className=" md:block ml-2 mr-4">Dashboard</Button>
-              </Link>
-
+          <div className="flex lg:hidden gap-4">
+            <SignInButton />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -55,11 +49,7 @@ export default function Navbar() {
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-
-              <Link href="/dashboard">
-                <Button className="hidden md:block ml-2 mr-2">Dashboard</Button>
-              </Link>
-
+            <SignInButton />
           </div>
         </nav>
         <Dialog
@@ -96,11 +86,7 @@ export default function Navbar() {
                   ))}
                 </div>
                 <div className="py-6">
-
-                    <Link href="/dashboard">
-                      <Button>Dashboard</Button>
-                    </Link>
-
+                  <SignInButton />
                 </div>
               </div>
             </div>
