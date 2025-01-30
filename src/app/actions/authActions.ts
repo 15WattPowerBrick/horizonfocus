@@ -7,7 +7,7 @@ import bcryptjs from "bcryptjs";
 
 // Handle Google Sign-In
 export async function handleGoogleSignIn() {
-  await signIn("google", { redirectTo: "/crm" });
+  await signIn("google", { redirectTo: "/org" });
 }
 
 // Handle Sign Out

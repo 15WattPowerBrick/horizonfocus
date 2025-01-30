@@ -41,7 +41,7 @@ export default function CreateOrganisation() {
     try {
       setLoading(true);
       await axios.post("/api/organisation", values);
-      router.push("/crm"); // Redirect after success
+      router.push("/org"); // Redirect after success
     } catch (error) {
       console.error("Failed to create organisation", error);
     } finally {
