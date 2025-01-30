@@ -7,6 +7,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { signInSchema } from "./zod";
 import bcrypt from "bcryptjs";
+import { GoogleProfile } from "next-auth/providers/google";
 
 const adapter = PrismaAdapter(prisma);
 
@@ -47,7 +48,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return user;
       },
     }),
-    Google,
+    Google({
+      profile: (_profile: GoogleProfile) => {
+        return {
+          id: _profile.sub,
+          firstName: _profile.given_name,
+          lastName: _profile.family_name,
+          email: _profile.email,
+          image: _profile.picture,
+        };
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, account }) {

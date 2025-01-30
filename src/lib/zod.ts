@@ -11,7 +11,11 @@ export const signInSchema = object({
 });
 
 export const signUpSchema = object({
-  name: string({ required_error: "Name is required." })
+  firstName: string({ required_error: "Name is required." })
+    .min(1, "Name is required.")
+    .max(50, "Name must be less than 50 characters."),
+
+  lastName: string({ required_error: "Name is required." })
     .min(1, "Name is required.")
     .max(50, "Name must be less than 50 characters."),
 

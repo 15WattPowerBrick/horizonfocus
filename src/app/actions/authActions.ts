@@ -22,7 +22,8 @@ export async function getUserFromDb(email: string) {
       where: { email },
       select: {
         id: true,
-        name: true,
+        firstName: true,
+        lastName: true,
         email: true,
         password: true, // Password is included but used only in login()
         createdAt: true,
@@ -80,19 +81,27 @@ export async function login({
 
 // Handle User Registration
 export async function register({
-  name,
+  firstName,
+  lastName,
   email,
   password,
   confirmPassword,
 }: {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
 }) {
   try {
     // Validate input schema
-    signUpSchema.parse({ name, email, password, confirmPassword });
+    signUpSchema.parse({
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+    });
 
     // Check if user already exists
     const existingUser = await getUserFromDb(email);
@@ -108,7 +117,7 @@ export async function register({
 
     // Create user
     await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: { firstName, lastName, email, password: hashedPassword },
     });
 
     return { success: true, message: "Account created successfully." };
