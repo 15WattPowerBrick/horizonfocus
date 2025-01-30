@@ -9,10 +9,7 @@ export function SignInButton() {
   const router = useRouter();
 
   return session ? (
-    <Button
-      className="w-full sm:w-auto"
-      onClick={() => router.push("/dashboard")}
-    >
+    <Button className="w-full sm:w-auto" onClick={() => router.push("/crm")}>
       Go to Dashboard
     </Button>
   ) : (

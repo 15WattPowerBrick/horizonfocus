@@ -50,7 +50,7 @@ export function LoginForm({
       const result: ServerActionResponse = await login(values);
       if (result.success) {
         console.log("Sign in successfully.");
-        router.push("/dashboard");
+        router.push("/crm");
       } else {
         setGlobalError(result.message);
       }
