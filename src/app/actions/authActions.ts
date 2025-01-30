@@ -1,9 +1,42 @@
 "use server";
 
 import { signIn, signOut } from "@/lib/auth";
-import { AuthError } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { signInSchema, signUpSchema } from "@/lib/zod";
+import bcryptjs from "bcryptjs";
 
-export async function handleCredentialsSignIn({
+// Handle Google Sign-In
+export async function handleGoogleSignIn() {
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
+// Handle Sign Out
+export async function handleSignOut() {
+  await signOut();
+}
+
+// Fetch user from the database by email
+export async function getUserFromDb(email: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true, // Password is included but used only in login()
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+}
+
+// Handle Login
+export async function login({
   email,
   password,
 }: {
@@ -11,29 +44,76 @@ export async function handleCredentialsSignIn({
   password: string;
 }) {
   try {
-    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return {
-            message: "Invalid credentials.",
-          };
-        default:
-          return {
-            message: "Something went wrong.",
-          };
-      }
+    // Validate input schema
+    signInSchema.parse({ email, password });
+
+    const user = await getUserFromDb(email);
+
+    if (!user) {
+      return { success: false, message: "User not found. Please register." };
     }
 
-    throw error;
+    if (!user.password) {
+      return {
+        success: false,
+        message: "User registered with Google. Use Google sign-in.",
+      };
+    }
+
+    // Compare passwords
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
+    if (!isPasswordValid) {
+      return { success: false, message: "Incorrect password. Try again." };
+    }
+
+    await signIn("credentials", { redirect: false, email, password });
+
+    return { success: true, message: "Signed in successfully." };
+  } catch (error) {
+    console.error("Error during sign-in:", error);
+    return {
+      success: false,
+      message: "Login failed. Check credentials and try again.",
+    };
   }
 }
 
-export async function handleGoogleSignIn() {
-  await signIn("google", { redirectTo: "/dashboard" });
-}
+// Handle User Registration
+export async function register({
+  name,
+  email,
+  password,
+  confirmPassword,
+}: {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) {
+  try {
+    // Validate input schema
+    signUpSchema.parse({ name, email, password, confirmPassword });
 
-export async function handleSignOut() {
-  await signOut();
+    // Check if user already exists
+    const existingUser = await getUserFromDb(email);
+    if (existingUser) {
+      return {
+        success: false,
+        message: "User already exists. Sign in instead.",
+      };
+    }
+
+    // Hash password
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Create user
+    await prisma.user.create({
+      data: { name, email, password: hashedPassword },
+    });
+
+    return { success: true, message: "Account created successfully." };
+  } catch (error) {
+    console.error("Error during registration:", error);
+    return { success: false, message: "Registration error. Please try again." };
+  }
 }

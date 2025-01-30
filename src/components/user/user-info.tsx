@@ -1,13 +1,9 @@
-import { auth } from "@/lib/auth"
- 
+import { auth } from "@/lib/auth";
+
 export default async function UserAvatar() {
-  const session = await auth()
- 
-  if (!session?.user) return null
- 
-  return (
-    <div>
-        {session.user.email}
-    </div>
-  )
+  const session = await auth();
+
+  if (!session?.user) return null;
+
+  return <div>{session.user.email}</div>;
 }

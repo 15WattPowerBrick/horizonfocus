@@ -1,37 +1,47 @@
 import NextAuth from "next-auth";
+import { v4 as uuid } from "uuid";
+import { encode as defaultEncode } from "next-auth/jwt";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { signInSchema } from "./zod";
+import bcrypt from "bcryptjs";
+
+const adapter = PrismaAdapter(prisma);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter,
+  session: {
+    strategy: "database",
+  },
   providers: [
     Credentials({
       credentials: {
-        username: { label: "Username" },
-        password: { label: "Password", type: "password" },
+        email: {},
+        password: {},
       },
-      async authorize(credentials) {
-        let user = null;
+      authorize: async (credentials) => {
+        const validatedCredentials = signInSchema.parse(credentials);
 
-        user = {
-          id: "1",
-          name: "Aung",
-          email: "email@mail.com",
-        };
-
-        const parsedCredentials = signInSchema.safeParse(credentials);
-
-        if (!parsedCredentials.success) {
-          console.error("Invalid credentials:", parsedCredentials.error.errors);
-          return null;
-        }
+        const user = await prisma.user.findFirst({
+          where: {
+            email: validatedCredentials.email.toLowerCase(),
+          },
+        });
 
         if (!user) {
-          console.log("Invalid credentials!");
-          return null;
+          throw new Error("Invalid credentials.");
+        }
+
+        //Compare the provided password with the stored hash
+        const isPasswordValid = await bcrypt.compare(
+          validatedCredentials.password,
+          user.password as string
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid credentials.");
         }
 
         return user;
@@ -39,32 +49,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
     Google,
   ],
-  secret: process.env.AUTH_SECRET,
-  session: {
-    strategy: "database",
-  },
-  pages: {
-    signIn: "/signin",
-  },
   callbacks: {
-    authorized({ request: { nextUrl }, auth }) {
-      const isLoggedIn = !!auth?.user;
-      const { pathname } = nextUrl;
-      if (pathname.startsWith("/signin") && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+    async jwt({ token, account }) {
+      if (account?.provider === "credentials") {
+        token.credentials = true;
       }
-
-      return !!auth;
+      return token;
     },
-    // jwt({ token, user }) {
-    //   if (user) {
-    //     token.id = user.id as string;
-    //   }
-    //   return token;
-    // },
-    // session({ session, token }) {
-    //   session.user.id = token.id;
-    //   return session;
-    // },
+  },
+  jwt: {
+    encode: async function (params) {
+      if (params.token?.credentials) {
+        const sessionToken = uuid();
+
+        if (!params.token.sub) {
+          throw new Error("No user ID found in token");
+        }
+
+        const createdSession = await adapter?.createSession?.({
+          sessionToken: sessionToken,
+          userId: params.token.sub,
+          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        });
+
+        if (!createdSession) {
+          throw new Error("Failed to create session");
+        }
+
+        return sessionToken;
+      }
+      return defaultEncode(params);
+    },
+  },
+  secret: process.env.AUTH_SECRET,
+  pages: {
+    signIn: "/auth/signin",
   },
 });
