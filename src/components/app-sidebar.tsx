@@ -1,3 +1,5 @@
+// /src/components/app-sidebar.tsx
+
 "use client";
 
 import * as React from "react";
@@ -13,7 +15,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { ExtendedSession } from "../../types/next-auth";
+import { ExtendedSession } from "../lib/types/next-auth";
 
 export function AppSidebar({
   session,
@@ -31,9 +33,10 @@ export function AppSidebar({
   };
 
   // Map organisations from session memberships
-  const organisations = session.user.memberships.map((membership) => ({
+  const teams = session.user.memberships.map((membership) => ({
+    id: membership.organisation.id, // Include the `id`
     name: membership.organisation.name,
-    logo: GalleryVerticalEnd, // Placeholder, you might want to store logos in DB
+    logo: GalleryVerticalEnd, // Use a placeholder or dynamic logo
     plan: membership.role.name, // Show role in the organisation
   }));
 
@@ -59,7 +62,7 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={organisations} />
+        <TeamSwitcher teams={teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavCrm projects={tabs} />

@@ -1,14 +1,22 @@
-"use client";
+// /src/app/org/page.tsx
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { ExtendedSession } from "@/lib/types/next-auth";
 
-import { useSession } from "next-auth/react";
+export default async function OrgPage() {
+  const session = (await auth()) as ExtendedSession;
 
-export default function Page() {
-  const { data: session } = useSession();
-  if (!session?.user) return null;
+  // Redirect to sign-in if the user is not authenticated
+  if (!session?.user) {
+    redirect("/auth/signin");
+  }
 
-  return (
-    <div>
-      <p>Signed in as {session.user.email}</p>
-    </div>
-  );
+  // Redirect to /getstarted if the user has no organization memberships
+  if (session.user.memberships.length === 0) {
+    redirect("/getstarted");
+  }
+
+  // Redirect to /org/[orgid] if the user is in /org and has memberships
+  const firstOrgId = session.user.memberships[0].organisation.id;
+  redirect(`/org/${firstOrgId}`);
 }

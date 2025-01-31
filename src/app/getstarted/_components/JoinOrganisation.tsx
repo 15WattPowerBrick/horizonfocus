@@ -34,14 +34,10 @@ export function JoinOrganisation() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
-
   return (
     <Form {...form}>
       <h2 className="text-xl font-bold mb-2">Join Organisation</h2>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form className="w-2/3 space-y-6">
         <FormField
           control={form.control}
           name="pin"

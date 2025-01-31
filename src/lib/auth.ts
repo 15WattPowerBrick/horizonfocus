@@ -1,3 +1,4 @@
+// /src/lib/auth.ts
 import NextAuth from "next-auth";
 import { v4 as uuid } from "uuid";
 import { encode as defaultEncode } from "next-auth/jwt";

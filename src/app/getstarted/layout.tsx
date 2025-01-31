@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { ExtendedSession } from "../../../types/next-auth";
+import { ExtendedSession } from "../../lib/types/next-auth";
 
 export default async function GetStartedLayout({
   children,
@@ -11,10 +11,6 @@ export default async function GetStartedLayout({
   if (!session?.user) {
     redirect("/auth/signin");
     return null;
-  }
-
-  if (session.user.memberships.length > 0) {
-    redirect("/org");
   }
 
   return <>{children}</>;

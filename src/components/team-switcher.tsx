@@ -1,13 +1,14 @@
+// /src/components/team-switcher.tsx
 "use client";
 import * as React from "react";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { useOrg } from "@/context/OrgContext";
+import { ChevronsUpDown, ChartBarStacked, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -16,20 +17,55 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useRouter, usePathname } from "next/navigation"; // Import useRouter and usePathname
+import { useEffect } from "react";
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-}) {
+type Team = {
+  id: string;
+  name: string;
+  logo: React.ElementType;
+  plan: string;
+};
+
+export function TeamSwitcher({ teams }: { teams: Team[] }) {
+  const { selectedOrg, setSelectedOrg } = useOrg();
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState<
-    (typeof teams)[number] | null
-  >(null);
+  const router = useRouter();
+  const pathname = usePathname(); // Get the current pathname
+
+  // Sync the selectedOrg state with the URL
+  useEffect(() => {
+    const orgId = pathname.split("/")[2]; // Extract orgId from the URL
+    if (orgId) {
+      const selectedTeam = teams.find((team) => team.id === orgId);
+      if (selectedTeam) {
+        setSelectedOrg({
+          id: selectedTeam.id,
+          name: selectedTeam.name,
+          role: selectedTeam.plan,
+        });
+      }
+    } else {
+      // If no orgId is present, redirect to /getstarted or set a default organization
+      if (teams.length > 0) {
+        router.push(`/org/${teams[0].id}`); // Redirect to the first organization
+      } else {
+        router.push("/getstarted"); // Redirect to /getstarted if no organizations exist
+      }
+    }
+  }, [pathname, teams, setSelectedOrg, router]);
+
+  const handleOrgChange = (team: Team) => {
+    // Update the selected organization in the context
+    setSelectedOrg({
+      id: team.id,
+      name: team.name,
+      role: team.plan,
+    });
+
+    // Update the URL to reflect the new organization
+    router.push(`/org/${team.id}`);
+  };
 
   return (
     <SidebarMenu>
@@ -40,16 +76,16 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {activeTeam ? (
+              {selectedOrg ? (
                 <>
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <activeTeam.logo className="size-4" />
+                    <ChartBarStacked />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {activeTeam.name}
+                      {selectedOrg.name}
                     </span>
-                    <span className="truncate text-xs">{activeTeam.plan}</span>
+                    <span className="truncate text-xs">{selectedOrg.role}</span>
                   </div>
                 </>
               ) : (
@@ -74,23 +110,22 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Teams
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {teams.map((team) => (
               <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
+                key={team.id}
+                onClick={() => handleOrgChange(team)} // Use handleOrgChange
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
                   <team.logo className="size-4 shrink-0" />
                 </div>
                 {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="gap-2 p-2"
-              onClick={() => setActiveTeam(null)}
+              onClick={() => router.push("/getstarted")}
             >
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />

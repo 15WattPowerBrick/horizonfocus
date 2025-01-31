@@ -18,6 +18,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { createOrganisationSchema } from "@/lib/zod";
+import { Organisation } from "../../../lib/types/next-auth";
 
 type OrganisationFormValues = z.infer<typeof createOrganisationSchema>;
 
@@ -29,26 +30,30 @@ export default function CreateOrganisation() {
     resolver: zodResolver(createOrganisationSchema),
     defaultValues: {
       organisationName: "",
-      // country: "",
-      // street1: "",
-      // street2: "",
-      // floor: "",
-      // unit: "",
-      // postalCode: "",
     },
   });
 
   async function onSubmit(values: OrganisationFormValues) {
     try {
       setLoading(true);
-      await axios.post("/api/organisation", values);
-      router.push("/org"); // Redirect after success
+      const response = (await axios.post(
+        "/api/organisation",
+        values
+      )) as Organisation;
+      router.push("/org/" + response.id);
     } catch (error) {
       console.error("Failed to create organisation", error);
     } finally {
       setLoading(false);
     }
   }
+
+  const freeTierFeatures = [
+    { label: "Organisations", limit: 1 },
+    { label: "Clients", limit: 50 },
+    { label: "Candidates", limit: 50 },
+    { label: "Invoices", limit: 50 },
+  ];
 
   return (
     <>
@@ -63,7 +68,11 @@ export default function CreateOrganisation() {
               <FormItem>
                 <FormLabel>Organisation Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter organisation name" {...field} />
+                  <Input
+                    placeholder="Enter organisation name"
+                    className="bg-white"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
                 <FormDescription>
@@ -74,94 +83,25 @@ export default function CreateOrganisation() {
             )}
           />
 
-          {/* <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter country" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="street1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street 1</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter street address" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="street2"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street 2 (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter second address line" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="floor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Floor</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Floor" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="unit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Unit</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Unit" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Postal Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Postal Code" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
-
           <Button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create"}
           </Button>
         </form>
       </Form>
+      <div className=" bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Free Tier</h3>
+        <ul className="space-y-2">
+          {freeTierFeatures.map((feature, index) => (
+            <li
+              key={index}
+              className="flex justify-between text-gray-600 border-b pb-2 last:border-b-0"
+            >
+              <span>{feature.label}</span>
+              <span className="font-medium">{feature.limit}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 }

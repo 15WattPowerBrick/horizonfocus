@@ -1,3 +1,4 @@
+// /lib/types/next-auth.d.ts
 import { Session } from "next-auth";
 
 type Organisation = {
@@ -24,9 +25,9 @@ export type ExtendedUser = {
   lastName?: string | null;
   email: string;
   image?: string | null;
-  memberships: Membership[];
+  memberships: Membership[]; // Ensure this is defined
 };
 
 export type ExtendedSession = Session & {
-  user: ExtendedUser;
+  user: ExtendedUser; // Ensure this is defined
 };
