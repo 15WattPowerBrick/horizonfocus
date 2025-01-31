@@ -16,10 +16,14 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = (await auth()) as ExtendedSession;
   if (!session?.user) {
     redirect("/auth/signin");
     return null;
+  }
+
+  if (session.user.memberships.length == 0) {
+    redirect("/getstarted");
   }
 
   return (

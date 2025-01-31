@@ -51,10 +51,7 @@ export default function CreateOrganisation() {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-2">Create an Organisation</h2>
-      <p className="text-gray-600 mb-4">
-        Create a new organisation and invite others
-      </p>
+      <h2 className="text-xl font-bold mb-2">Create Organisation</h2>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -155,8 +152,8 @@ export default function CreateOrganisation() {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating..." : "Create Organisation"}
+          <Button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create"}
           </Button>
         </form>
       </Form>
