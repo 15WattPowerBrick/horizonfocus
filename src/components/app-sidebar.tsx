@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import * as React from "react";
 import { Frame, GalleryVerticalEnd, Map, PieChart } from "lucide-react";
 
@@ -14,10 +13,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { ExtendedSession } from "../../types/next-auth";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
-
+export function AppSidebar({
+  session,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { session: ExtendedSession | null }) {
   if (!session?.user) return null; // Ensure session is available before rendering
 
   console.log(session);

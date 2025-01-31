@@ -1,24 +1,32 @@
-import "next-auth";
-import { Membership } from "@prisma/client";
+import { Session } from "next-auth";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      firstName: string | null;
-      lastName: string | null;
-      email: string;
-      image: string | null;
-      memberships: Array<
-        Membership & {
-          organisation: Organisation;
-          role: Role & {
-            permissions: Array<{
-              permission: Permission;
-            }>;
-          };
-        }
-      >;
-    };
-  }
-}
+type Organisation = {
+  id: string;
+  name: string;
+};
+
+type Permission = string;
+
+type Role = {
+  id: string;
+  name: string;
+  permissions: Permission[];
+};
+
+type Membership = {
+  organisation: Organisation;
+  role: Role;
+};
+
+export type ExtendedUser = {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email: string;
+  image?: string | null;
+  memberships: Membership[];
+};
+
+export type ExtendedSession = Session & {
+  user: ExtendedUser;
+};
