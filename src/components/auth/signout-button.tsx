@@ -1,14 +1,14 @@
-import { signOut } from "@/lib/auth";
+"use client";
 
-export function SignOut() {
+import { signOut } from "next-auth/react";
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
+
+export function SignOutButton() {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut();
-      }}
-    >
-      <button type="submit">Sign Out</button>
-    </form>
+    <Button onClick={() => signOut()} className="">
+      <LogOut />
+      Sign Out
+    </Button>
   );
 }

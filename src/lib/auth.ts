@@ -67,6 +67,53 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token;
     },
+    async session({ session, user }) {
+      const extendedUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          memberships: {
+            include: {
+              organisation: true,
+              role: {
+                include: {
+                  rolePermissions: {
+                    include: {
+                      permission: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!extendedUser) return session;
+
+      return {
+        ...session,
+        user: {
+          id: extendedUser.id,
+          firstName: extendedUser.firstName,
+          lastName: extendedUser.lastName,
+          email: extendedUser.email,
+          image: extendedUser.image,
+          memberships: extendedUser.memberships.map((membership) => ({
+            organisation: {
+              id: membership.organisation.id,
+              name: membership.organisation.name,
+            },
+            role: {
+              id: membership.role.id,
+              name: membership.role.name,
+              permissions: membership.role.rolePermissions.map(
+                (rp) => rp.permission.name
+              ),
+            },
+          })),
+        },
+      };
+    },
   },
   jwt: {
     encode: async function (params) {

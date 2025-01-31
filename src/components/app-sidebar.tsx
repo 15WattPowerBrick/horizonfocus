@@ -1,14 +1,8 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import * as React from "react";
-import {
-  AudioWaveform,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-} from "lucide-react";
+import { Frame, GalleryVerticalEnd, Map, PieChart } from "lucide-react";
 
 import { NavCrm } from "@/components/nav-crm";
 import { NavUser } from "@/components/nav-user";
@@ -21,60 +15,56 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  projects: [
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+
+  if (!session?.user) return null; // Ensure session is available before rendering
+
+  console.log(session);
+  console.log("hi from sidebar");
+
+  const user = {
+    name: session.user.firstName || "User",
+    email: session.user.email,
+    avatar: session.user.image || "/avatars/default.jpg",
+  };
+
+  // Map organisations from session memberships
+  const organisations = session.user.memberships.map((membership) => ({
+    name: membership.organisation.name,
+    logo: GalleryVerticalEnd, // Placeholder, you might want to store logos in DB
+    plan: membership.role.name, // Show role in the organisation
+  }));
+
+  // Define sidebar tabs (replace these with dynamic data if needed)
+  const tabs = [
     {
       name: "Clients",
-      url: "#",
+      url: "/clients",
       icon: Frame,
     },
     {
       name: "Projects",
-      url: "#",
+      url: "/projects",
       icon: PieChart,
     },
     {
       name: "Invoices",
-      url: "#",
+      url: "/invoices",
       icon: Map,
     },
-  ],
-};
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={organisations} />
       </SidebarHeader>
       <SidebarContent>
-        <NavCrm projects={data.projects} />
+        <NavCrm projects={tabs} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
