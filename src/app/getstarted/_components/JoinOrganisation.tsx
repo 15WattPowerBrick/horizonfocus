@@ -69,7 +69,8 @@ export function JoinOrganisation() {
                 </InputOTP>
               </FormControl>
               <FormDescription>
-                Please enter the one-time password sent to your phone.
+                Please enter the one-time password provided by the organisation
+                admin.
               </FormDescription>
               <FormMessage />
             </FormItem>

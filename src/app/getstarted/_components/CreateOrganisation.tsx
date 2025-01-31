@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { createOrganisationSchema } from "@/lib/zod";
 
@@ -28,12 +29,12 @@ export default function CreateOrganisation() {
     resolver: zodResolver(createOrganisationSchema),
     defaultValues: {
       organisationName: "",
-      country: "",
-      street1: "",
-      street2: "",
-      floor: "",
-      unit: "",
-      postalCode: "",
+      // country: "",
+      // street1: "",
+      // street2: "",
+      // floor: "",
+      // unit: "",
+      // postalCode: "",
     },
   });
 
@@ -54,7 +55,7 @@ export default function CreateOrganisation() {
       <h2 className="text-xl font-bold mb-2">Create Organisation</h2>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="organisationName"
@@ -65,11 +66,15 @@ export default function CreateOrganisation() {
                   <Input placeholder="Enter organisation name" {...field} />
                 </FormControl>
                 <FormMessage />
+                <FormDescription>
+                  Create your very own organisation and invite other users to
+                  collaborate.
+                </FormDescription>
               </FormItem>
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="country"
             render={({ field }) => (
@@ -150,7 +155,7 @@ export default function CreateOrganisation() {
                 </FormItem>
               )}
             />
-          </div>
+          </div> */}
 
           <Button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Create"}

@@ -41,13 +41,13 @@ export const createOrganisationSchema = z.object({
     .string({ required_error: "Organisation name is required." })
     .min(1, "Organisation name is required.")
     .max(100, "Name must be less than 100 characters."),
-  country: z.string().min(2, "Country is required."),
-  street1: z.string().min(1, "Street address is required."),
-  street2: z.string().optional(),
-  floor: z.string().optional(),
-  unit: z.string().optional(),
-  postalCode: z
-    .string()
-    .min(4, "Postal code must be at least 4 characters.")
-    .max(10, "Postal code must be less than 10 characters."),
+  // country: z.string().min(2, "Country is required."),
+  // street1: z.string().min(1, "Street address is required."),
+  // street2: z.string().optional(),
+  // floor: z.string().optional(),
+  // unit: z.string().optional(),
+  // postalCode: z
+  //   .string()
+  //   .min(4, "Postal code must be at least 4 characters.")
+  //   .max(10, "Postal code must be less than 10 characters."),
 });
