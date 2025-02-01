@@ -9,7 +9,7 @@ export default function Loading() {
 
         {/* Loader and text side by side */}
         <div className="flex items-center space-x-2">
-          <span className="text-lg text-gray-700">Switching Organisation</span>
+          <span className="text-lg text-gray-700">Getting Ready</span>
         </div>
       </div>
     </div>

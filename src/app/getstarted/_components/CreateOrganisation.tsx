@@ -20,6 +20,10 @@ import {
 import { createOrganisationSchema } from "@/lib/zod";
 import { Organisation } from "../../../lib/types/next-auth";
 
+type ResponseType = {
+  data: Organisation;
+};
+
 type OrganisationFormValues = z.infer<typeof createOrganisationSchema>;
 
 export default function CreateOrganisation() {
@@ -39,8 +43,10 @@ export default function CreateOrganisation() {
       const response = (await axios.post(
         "/api/organisation",
         values
-      )) as Organisation;
-      router.push("/org/" + response.id);
+      )) as ResponseType;
+      const id = response.data.id;
+      console.log("this is the id", id);
+      router.push("/org/" + id);
     } catch (error) {
       console.error("Failed to create organisation", error);
     } finally {
