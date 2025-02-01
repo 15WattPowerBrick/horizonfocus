@@ -1,6 +1,7 @@
 // /src/app/org/layout.tsx
 import { auth } from "@/lib/auth";
 import { OrgProvider } from "@/context/OrgContext";
+import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -19,9 +20,8 @@ export default async function Layout({
 }) {
   const session = (await auth()) as ExtendedSession;
 
-  // If the user is not authenticated or has no memberships, render nothing.
-  // The redirection logic will be handled in the page component.
-  if (!session?.user || session.user.memberships.length === 0) {
+  if (!session?.user) {
+    redirect("/auth/signin");
     return null;
   }
 
