@@ -28,6 +28,7 @@ import { Loader2 } from "lucide-react";
 import { register } from "@/app/actions/authActions";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ServerActionResponse } from "@/lib/types/actions";
 
 export function SignUpForm({
   className,
