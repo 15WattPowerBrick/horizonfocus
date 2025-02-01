@@ -38,19 +38,24 @@ export default function CreateOrganisation() {
   });
 
   async function onSubmit(values: OrganisationFormValues) {
+    let id: string | undefined;
+
     try {
       setLoading(true);
       const response = (await axios.post(
         "/api/organisation",
         values
       )) as ResponseType;
-      const id = response.data.id;
-      console.log("this is the id", id);
-      router.push("/org/" + id);
+      id = response.data.id;
     } catch (error) {
       console.error("Failed to create organisation", error);
     } finally {
-      setLoading(false);
+      if (id) {
+        router.push("/org/" + id);
+      } else {
+        setLoading(false);
+        console.error("Organisation ID is undefined");
+      }
     }
   }
 
