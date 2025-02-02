@@ -23,9 +23,6 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & { session: ExtendedSession | null }) {
   if (!session?.user) return null; // Ensure session is available before rendering
 
-  console.log(session);
-  console.log("hi from sidebar");
-
   const user = {
     name: session.user.firstName || "User",
     email: session.user.email,

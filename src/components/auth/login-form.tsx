@@ -50,13 +50,11 @@ export function LoginForm({
     try {
       const result: ServerActionResponse = await login(values);
       if (result.success) {
-        console.log("Sign in successfully.");
         router.push("/org");
       } else {
         setGlobalError(result.message);
       }
     } catch (error) {
-      console.log("An unexpected error occurred, please try again.");
       console.log(error);
     }
   };

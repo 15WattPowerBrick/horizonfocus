@@ -51,9 +51,7 @@ export function SignUpForm({
   const onsubmit = async (values: z.infer<typeof signUpSchema>) => {
     try {
       const result: ServerActionResponse = await register(values);
-      console.log("Here is the resule", result);
       if (result.success) {
-        console.log("Account created successfully.");
         router.push("/auth/signin");
       } else {
         setGlobalError(result.message);

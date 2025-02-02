@@ -22,10 +22,6 @@ export default async function Layout({
     redirect("/getstarted");
   }
 
-  // Redirect to /org/[orgid] if the user is in /org and has memberships
-  const firstOrgId = session.user.memberships[0].organisation.id;
-  redirect(`/org/${firstOrgId}`);
-
   return (
     <>
       <SidebarProvider>
