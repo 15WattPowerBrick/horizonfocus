@@ -1,14 +1,13 @@
-"use client";
-
-import { useSession } from "next-auth/react";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ExtendedSession } from "../../lib/types/next-auth";
 
-export default function GetStartedLayout({
+export default async function GetStartedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session } = useSession();
+  const session = (await auth()) as ExtendedSession;
   if (!session?.user) {
     redirect("/auth/signin");
     return null;

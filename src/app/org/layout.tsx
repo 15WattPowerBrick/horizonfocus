@@ -2,6 +2,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ExtendedSession } from "../../lib/types/next-auth";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 export default async function Layout({
   children,
@@ -20,5 +22,16 @@ export default async function Layout({
     redirect("/getstarted");
   }
 
-  return <>{children}</>;
+  // Redirect to /org/[orgid] if the user is in /org and has memberships
+  const firstOrgId = session.user.memberships[0].organisation.id;
+  redirect(`/org/${firstOrgId}`);
+
+  return (
+    <>
+      <SidebarProvider>
+        <AppSidebar session={session as ExtendedSession} />
+        {children}
+      </SidebarProvider>
+    </>
+  );
 }

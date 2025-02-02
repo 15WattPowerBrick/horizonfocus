@@ -1,10 +1,12 @@
+"use client";
+
 import CreateOrganisation from "./_components/CreateOrganisation";
 import { JoinOrganisation } from "./_components/JoinOrganisation";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { GalleryVerticalEnd } from "lucide-react";
 
-const Page = async () => {
+const Page = () => {
   return (
     <>
       <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">

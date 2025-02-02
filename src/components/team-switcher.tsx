@@ -45,14 +45,15 @@ export function TeamSwitcher({ teams }: { teams: Team[] }) {
           role: selectedTeam.plan,
         });
       }
-    } else {
-      // If no orgId is present, redirect to /getstarted or set a default organization
-      if (teams.length > 0) {
-        router.push(`/org/${teams[0].id}`); // Redirect to the first organization
-      } else {
-        router.push("/getstarted"); // Redirect to /getstarted if no organizations exist
-      }
     }
+    //else {
+    //   // If no orgId is present, redirect to /getstarted or set a default organization
+    //   // if (teams.length > 0) {
+    //   //   router.push(`/org/${teams[0].id}`); // Redirect to the first organization
+    //   // } else {
+    //   //   router.push("/getstarted"); // Redirect to /getstarted if no organizations exist
+    //   // }
+    // }
   }, [pathname, teams, setSelectedOrg, router]);
 
   const handleOrgChange = (team: Team) => {
